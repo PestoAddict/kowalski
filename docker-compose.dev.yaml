@@ -1,0 +1,73 @@
+version: '3.9'
+
+
+x-redis-cred: &redis-cred
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+x-mongo-cred: &mongo-cred
+  MONGO_INITDB_ROOT_USERNAME: 'test'
+  MONGO_INITDB_ROOT_PASSWORD: 'test'
+
+x-pg-cred: &pg-cred
+  POSTGRES_DB: 'db'
+  POSTGRES_USER: 'user'
+  POSTGRES_PASSWORD: 'pass'
+
+
+services:
+
+  postgres:
+    image: postgres:14.3
+    environment: *pg-cred
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7.0
+    environment: *redis-cred
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_volume:/data
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "redis-cli" ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+
+  mongo:
+    image: mongo:4.4.19-rc2
+    environment: *mongo-cred
+    ports:
+      - "27017:27017"
+    restart: on-failure
+    healthcheck:
+      test: [ 'CMD-SHELL', 'echo', 'db.runCommand("ping").ok | mongo mongo:27017/test --quiet' ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    depends_on:
+      - mongo
+      - postgres
+      - redis
+
+
+volumes:
+  db_volume:
+  redis_volume:

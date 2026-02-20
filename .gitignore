@@ -1,0 +1,5 @@
+/config/config.local.py
+/logs/
+/.idea
+__pycache__/
+*/__pycache__/
