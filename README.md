@@ -19,10 +19,10 @@ FastAPI-based analytical service for solving combinatorics tasks and comparing s
 
 	•	FastAPI
 	•	Python
+	•	Pandas
 	•	Docker
 	•	PostgreSQL
-	•	SQL
-
+	•	Elastic Search
 ---
 
 📌 Эндпоинты / Endpoints
@@ -47,7 +47,7 @@ FastAPI-based analytical service for solving combinatorics tasks and comparing s
 
 Сервис генерирует все комбинации: The service generates all combinations:
 
-    •	туда
+		•	туда
     outbound
 	  •	обратно
     inbound
